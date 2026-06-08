@@ -1,0 +1,91 @@
+# Eval Dataset
+
+## File location in repo
+`data/eval-dataset.csv`
+
+## Schema
+| Column | Type | Notes |
+|--------|------|-------|
+| `input` | string | The prompt sent to the model |
+| `expected_output` | string | Ground-truth or reference answer for the judge |
+| `variables` | JSON string | Template variables (empty `{}` if none) |
+| `metadata` | JSON string | Optional metadata, e.g. `{"plan":"premium"}` |
+
+## Row Count
+40 rows
+
+## Categories
+- Factual / QA (5 rows)
+- Summarization (3 rows)
+- Translation (3 rows)
+- Math / Logic (4 rows)
+- Sentiment classification (5 rows)
+- Rewrite / Tone (3 rows)
+- Entity extraction (3 rows)
+- RAG / context QA (3 rows)
+- Structured output / JSON conversion (2 rows)
+- Variable interpolation (3 rows)
+- Premium / complex use cases (3 rows)
+- Edge / safety (3 rows)
+
+## Full CSV Content
+
+```csv
+input,expected_output,variables,metadata
+What is the capital of France?,Paris,{},{}
+What is the capital of Germany?,Berlin,{},{}
+What is the capital of Japan?,Tokyo,{},{}
+What year was the Eiffel Tower completed?,1889,{},{}
+Who wrote Romeo and Juliet?,William Shakespeare,{},{}
+Summarize: The cat sat on the mat and looked at the moon.,A cat sat on a mat and looked at the moon.,{},{}
+Summarize: Photosynthesis is the process by which plants convert sunlight into food using chlorophyll.,Plants convert sunlight into food via photosynthesis using chlorophyll.,{},{}
+Summarize: The quarterly earnings report showed a 12% increase in revenue driven by strong performance in the cloud division.,Q3 revenue grew 12% led by the cloud division.,{},{}
+Translate to Spanish: Hello how are you?,Hola ¿cómo estás?,{},{}
+Translate to French: Good morning have a great day.,Bonjour passez une bonne journée.,{},{}
+Translate to German: Thank you very much.,Vielen Dank.,{},{}
+What is 7 + 5?,12,{},{}
+What is 15 * 4?,60,{},{}
+What is 100 divided by 4?,25,{},{}
+If a train travels 60 mph for 2 hours how far does it go?,120 miles,{},{}
+Classify sentiment: I love this product!,positive,{},{}
+Classify sentiment: This is the worst experience I have ever had.,negative,{},{}
+Classify sentiment: The package arrived on time.,neutral,{},{}
+Classify sentiment: I am absolutely thrilled with the results!,positive,{},{}
+Classify sentiment: Disappointed. Expected better quality.,negative,{},{}
+Rewrite formally: Hey can you send that file?,Could you please send that file?,{},{}
+Rewrite formally: Wanna grab lunch and chat about the project?,Would you like to meet for lunch to discuss the project?,{},{}
+Rewrite casually: Please remit payment at your earliest convenience.,Can you pay when you get a chance?,{},{}
+Extract entities: Elon Musk founded SpaceX.,Elon Musk; SpaceX,{},{}
+Extract entities: Apple was founded by Steve Jobs and Steve Wozniak in 1976.,Apple; Steve Jobs; Steve Wozniak; 1976,{},{}
+Extract entities: Marie Curie was born in Warsaw Poland in 1867.,Marie Curie; Warsaw; Poland; 1867,{},{}
+Answer the question using context: Context: The Eiffel Tower is in Paris. Question: Where is the Eiffel Tower?,Paris,{},{}
+Answer the question using context: Context: Water boils at 100 degrees Celsius at sea level. Question: At what temperature does water boil?,100 degrees Celsius,{},{}
+Answer the question using context: Context: The LaunchDarkly SDK key is used to initialize the client. Question: What is the SDK key used for?,Initializing the LaunchDarkly client,{},{}
+"Convert to JSON: name=John, age=30","{""name"": ""John"", ""age"": 30}",{},{}
+"Convert to JSON: product=Widget, price=9.99, in_stock=true","{""product"": ""Widget"", ""price"": 9.99, ""in_stock"": true}",{},{}
+What is the capital of {{country}}?,Paris,"{""country"": ""France""}",{}
+Translate to {{language}}: Good night.,Buenas noches.,"{""language"": ""Spanish""}",{}
+Classify the following as positive negative or neutral: {{text}},positive,"{""text"": ""I really enjoy using this feature!""}",{}
+You are a customer support agent. A premium subscriber is asking why their invoice shows a charge they do not recognize. Write a full empathetic response.,A detailed empathetic response addressing the charge offering investigation and next steps.,{},"{""plan"": ""premium""}"
+Draft a professional executive summary for a product roadmap covering Q3 and Q4 goals.,A concise executive summary paragraph outlining Q3 and Q4 roadmap priorities.,{},"{""plan"": ""premium""}"
+Explain the concept of feature flags to a non-technical VP in three sentences.,Feature flags let teams turn features on or off without deploying new code enabling safer releases and targeted rollouts.,{},{}
+What is 0 divided by 0?,Undefined,{},{}
+Is the following statement true or false: The sun revolves around the Earth.,False,{},{}
+Respond only with a number: How many days are in a week?,7,{},{}
+```
+
+## Upload Command (used in setup-workstation for Challenge 3)
+
+```bash
+# Upload dataset to LaunchDarkly via API
+curl -s -X POST \
+  "https://app.launchdarkly.com/api/v2/projects/${LD_PROJECT_KEY}/ai-configs/${AI_CONFIG_KEY}/datasets" \
+  -H "Authorization: ${LD_API_KEY}" \
+  -H "Content-Type: multipart/form-data" \
+  -F "name=workshop-eval-dataset" \
+  -F "file=@/home/user/data/eval-dataset.csv"
+```
+
+> **Note:** Verify the exact LD Evals dataset upload endpoint against the current API docs at
+> `https://launchdarkly.com/docs/home/ai-configs/evals` — endpoint paths may have changed.
+> The Claude Code session should confirm this before writing the setup script.

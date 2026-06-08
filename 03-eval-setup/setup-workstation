@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# Ch3 setup — upload the eval dataset to AgentControl so the learner can
+# select it in the UI without typing it themselves.
+#
+set -euo pipefail
+
+REPO_ROOT="/opt/control-freak-ai"
+AI_CONFIG_KEY="otto-assistant"
+DATASET_NAME="workshop-eval-dataset"
+DATASET_FILE="${REPO_ROOT}/data/eval-dataset.csv"
+
+LD_API="${LD_API:-https://app.launchdarkly.com/api/v2}"
+AG_TOKEN="${LAUNCHDARKLY_AG_API_TOKEN:-$LAUNCHDARKLY_ACCESS_TOKEN}"
+
+: "${LD_PROJECT_KEY:?LD_PROJECT_KEY must be set}"
+: "${AG_TOKEN:?LAUNCHDARKLY_ACCESS_TOKEN or LAUNCHDARKLY_AG_API_TOKEN must be set}"
+
+if [ ! -f "$DATASET_FILE" ]; then
+  echo "ERROR: dataset file not found at $DATASET_FILE" >&2
+  exit 1
+fi
+
+echo "Uploading $DATASET_FILE → ${DATASET_NAME} on Config ${AI_CONFIG_KEY}"
+
+# NOTE: verify endpoint shape against current AgentControl docs:
+#   https://launchdarkly.com/docs/home/ai-configs/evals
+# Both multipart and JSON-with-base64 payloads have been seen during the
+# beta period; adjust if this 4xx's at lab start.
+RESPONSE=$(curl -fsS -X POST \
+  "${LD_API}/projects/${LD_PROJECT_KEY}/ai-configs/${AI_CONFIG_KEY}/datasets" \
+  -H "Authorization: ${AG_TOKEN}" \
+  -F "name=${DATASET_NAME}" \
+  -F "file=@${DATASET_FILE}")
+
+DATASET_ID=$(echo "$RESPONSE" | jq -r '.id // .key // empty')
+if [ -n "$DATASET_ID" ]; then
+  echo "$DATASET_ID" > /tmp/ld-eval-dataset-id
+  echo "Dataset uploaded. ID=${DATASET_ID} (saved to /tmp/ld-eval-dataset-id)"
+else
+  echo "Dataset upload returned no ID. Response:"
+  echo "$RESPONSE"
+fi

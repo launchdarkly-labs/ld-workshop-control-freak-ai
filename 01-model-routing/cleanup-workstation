@@ -1,0 +1,3 @@
+#!/bin/sh
+# Leave the app running and LD state intact — subsequent challenges depend on it.
+exit 0

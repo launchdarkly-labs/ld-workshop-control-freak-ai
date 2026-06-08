@@ -1,0 +1,18 @@
+#!/bin/bash
+# Ch1 has no per-challenge setup work. The track-level setup-workstation
+# already provisioned the Config, both variations, and the premium-users
+# segment, and started the togglewear service.
+#
+# Just confirm the app is responsive so the learner doesn't hit a 502
+# on first click.
+set -euo pipefail
+
+for _ in {1..30}; do
+  if curl -fsS http://localhost:3000/healthz > /dev/null; then
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "ToggleWear did not become ready on port 3000" >&2
+exit 1
