@@ -1,0 +1,94 @@
+#!/bin/sh
+
+# 1. The otto-assistant AI Config exists.
+CONFIG=$(curl -s -X GET \
+  "https://app.launchdarkly.com/api/v2/projects/${LD_PROJECT_KEY}/ai-configs/otto-assistant" \
+  -H "Authorization: ${LAUNCHDARKLY_AG_API_TOKEN}")
+
+if [ "$(echo "$CONFIG" | jq -r '.key // "null"')" = "null" ]; then
+  fail-message "The Otto Assistant AI Config has not been created yet. Follow the steps under **Create Otto's AI Config**."
+  exit 1
+fi
+
+# 2. The otto-born variation exists with a Haiku model config.
+VARIATION_MODEL=$(echo "$CONFIG" | jq -r '.variations[]? | select(.key=="otto-born") | .modelConfigKey // ""')
+if [ -z "$VARIATION_MODEL" ]; then
+  fail-message "Otto's first variation is missing. Make sure you created the variation named **Otto (Born)** with key **otto-born**."
+  exit 1
+fi
+if [ "$VARIATION_MODEL" != "Bedrock.anthropic.claude-haiku-4-5-20251001-v1:0" ]; then
+  fail-message "Otto's variation isn't using Claude Haiku 4.5. Pick **Anthropic Claude Haiku 4.5** as the model."
+  exit 1
+fi
+
+# 3. The variation has a system message (don't assert specific wording yet —
+#    that's challenge 02's concern).
+SYSTEM_MSG=$(echo "$CONFIG" | jq -r '.variations[]? | select(.key=="otto-born") | .messages[]? | select(.role=="system") | .content' | head -c 1)
+if [ -z "$SYSTEM_MSG" ]; then
+  fail-message "Otto's variation needs a system message. Add the starter prompt from the lab instructions."
+  exit 1
+fi
+
+# 4. Targeting in `test` env points at otto-born (not the default `disabled` variation).
+TARGETING=$(curl -s -X GET \
+  "https://app.launchdarkly.com/api/v2/projects/${LD_PROJECT_KEY}/ai-configs/otto-assistant/targeting" \
+  -H "Authorization: ${LAUNCHDARKLY_AG_API_TOKEN}")
+BORN_NAME=$(echo "$CONFIG" | jq -r '.variations[]? | select(.key=="otto-born") | .name')
+FALLTHROUGH_IDX=$(echo "$TARGETING" | jq -r '.environments.test.fallthrough.variation // empty')
+FALLTHROUGH_NAME=$(echo "$TARGETING" | jq -r ".variations[${FALLTHROUGH_IDX}].name // empty")
+if [ "$FALLTHROUGH_NAME" != "$BORN_NAME" ]; then
+  fail-message "Otto's **test** environment isn't serving the Born variation. On the **Targeting** tab, set the default variation to **Otto (Born)**."
+  exit 1
+fi
+
+# 5. The learner has pasted the SDK code into server.py.
+if ! grep -q 'ai_client.completion_config(OTTO_CONFIG_KEY' /opt/ld/ai-configs-intro/app/server.py; then
+  fail-message "Your server code still has the placeholder. Replace the **Challenge 01 paste block** in \`server.py\` with the code from the lab."
+  exit 1
+fi
+
+# 6. The otto-premium variation exists with the Sonnet 4.5 model config.
+PREMIUM_MODEL=$(echo "$CONFIG" | sed 's/\\/\\\\/g' | jq -r '.variations[]? | select(.key=="otto-premium") | .modelConfigKey // ""')
+if [ -z "$PREMIUM_MODEL" ]; then
+  fail-message "The premium variation hasn't been added yet. Create a new variation named **Otto (Premium)** with key **otto-premium**."
+  exit 1
+fi
+if [ "$PREMIUM_MODEL" != "Bedrock.anthropic.claude-sonnet-4-6" ]; then
+  fail-message "The premium variation isn't using Claude Sonnet 4.6. Pick **Anthropic Claude Sonnet 4.6** as the model."
+  exit 1
+fi
+
+# 7. The premium variation has a system message.
+PREMIUM_PROMPT=$(echo "$CONFIG" | sed 's/\\/\\\\/g' | jq -r '.variations[]? | select(.key=="otto-premium") | .messages[]? | select(.role=="system") | .content')
+if [ -z "$PREMIUM_PROMPT" ] || [ "$PREMIUM_PROMPT" = "null" ]; then
+  fail-message "The premium variation needs a system message. Add the premium-tier prompt from the lab."
+  exit 1
+fi
+
+# 8. A targeting rule routes tier==premium to otto-premium.
+PREMIUM_VAR_ID=$(echo "$TARGETING" | sed 's/\\/\\\\/g' | jq -r '.variations[]? | select(.name=="Otto (Premium)") | ._id')
+
+# Look for a rule with a clause attribute=tier, op=in, values includes "premium",
+# pointing at the premium variation (by index).
+PREMIUM_RULE=$(echo "$TARGETING" | sed 's/\\/\\\\/g' | jq -r --arg pid "$PREMIUM_VAR_ID" '
+  .environments.test.rules[]? as $r
+  | select($r.clauses[]? | (.attribute=="tier" and (.values | index("premium"))))
+  | $r._id
+' | head -1)
+
+if [ -z "$PREMIUM_RULE" ]; then
+  fail-message "No targeting rule for **premium** users found. On the **Targeting** tab, add a rule like: \`user.tier is one of premium\` → **Otto (Premium)**."
+  exit 1
+fi
+
+# Confirm the rule serves the premium variation (by index)
+RULE_VAR_IDX=$(echo "$TARGETING" | sed 's/\\/\\\\/g' | jq -r --arg rid "$PREMIUM_RULE" '
+  .environments.test.rules[]? | select(._id==$rid) | .variation
+')
+RULE_VAR_ID=$(echo "$TARGETING" | sed 's/\\/\\\\/g' | jq -r --argjson idx "$RULE_VAR_IDX" '.variations[$idx]._id')
+if [ "$RULE_VAR_ID" != "$PREMIUM_VAR_ID" ]; then
+  fail-message "The premium targeting rule is serving the wrong variation. Make sure it routes to **Otto (Premium)**."
+  exit 1
+fi
+
+exit 0

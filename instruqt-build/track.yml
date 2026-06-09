@@ -1,0 +1,39 @@
+slug: ld-control-freak-ai
+id: b4zo7ne2wuvj
+title: Control Freak AI — Build and Guard an Assistant with AgentControl
+teaser: Take an AI assistant from placeholder line to a guarded rollout. Iterate prompts,
+  swap models, evaluate offline, ship behind a safety net — all without redeploying.
+description: AgentControl lets you treat prompts, models, and targeting as runtime
+  configuration instead of hardcoded values. In this track you'll build Otto — the
+  shopping assistant for ToggleWear, a fictional online retailer of LaunchDarkly-branded
+  apparel. You'll create his first Config, route premium shoppers to a more capable model,
+  iterate on his personality without redeploying, grade him offline against a golden
+  dataset, and ship a risky new model behind a guarded rollout that auto-reverts when
+  quality drops. By the end, Otto is live, tier-aware, evaluated, and guarded — and
+  you've done it without touching deployment.
+icon: https://launchdarkly.com/favicon-dark-mode.png
+tags:
+- bedrock
+- ai
+- ai-configs
+owner: launchdarkly
+developers:
+- kcochran@launchdarkly.com
+- sattensil@launchdarkly.com
+show_timer: true
+idle_timeout: 1200
+timelimit: 7200
+lab_config:
+  extend_ttl: 3600
+  sidebar_enabled: true
+  feedback_recap_enabled: true
+  feedback_tab_enabled: false
+  loadingMessages: true
+  theme:
+    name: modern-dark
+  override_challenge_layout: false
+  hideStopButton: false
+  default_layout: AssignmentRight
+  default_layout_sidebar_size: 25
+checksum: "13216415798644042728"
+enhanced_loading: false
