@@ -7,14 +7,14 @@ REPO_ROOT="/opt/control-freak-ai"
 
 chmod +x "${REPO_ROOT}/scripts/trigger-bad-scenario.sh"
 
-# Belt-and-suspenders: confirm port 3000 is responsive.
+# Belt-and-suspenders: confirm port 3333 is responsive.
 for _ in {1..15}; do
-  if curl -fsS http://localhost:3000/healthz > /dev/null; then
+  if curl -fsS http://localhost:3333/healthz > /dev/null; then
     exit 0
   fi
   sleep 1
 done
 
-echo "ToggleWear is not responding on port 3000 — restarting service." >&2
+echo "ToggleWear is not responding on port 3333 — restarting service." >&2
 service togglewear restart || true
 exit 0

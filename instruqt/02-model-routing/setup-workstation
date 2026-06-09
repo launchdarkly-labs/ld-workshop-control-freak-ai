@@ -8,11 +8,11 @@
 set -euo pipefail
 
 for _ in {1..30}; do
-  if curl -fsS http://localhost:3000/healthz > /dev/null; then
+  if curl -fsS http://localhost:3333/healthz > /dev/null; then
     exit 0
   fi
   sleep 1
 done
 
-echo "ToggleWear did not become ready on port 3000" >&2
+echo "ToggleWear did not become ready on port 3333" >&2
 exit 1

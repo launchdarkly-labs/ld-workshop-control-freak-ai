@@ -1,13 +1,13 @@
 """ToggleWear server — Control Freak track.
 
-Otto is already wired up in this track (the wiring is the *given*, not the
-challenge). The challenges teach you to *control* him: route premium tier
-to a stronger model, edit his prompt live, eval his quality, and watch
-LaunchDarkly auto-roll back a regression.
+The /chat endpoint ships with a paste-block stub that Challenge 01 has the
+learner replace with real AgentControl + Bedrock wiring. After Ch01 it's
+fully alive; subsequent challenges teach the *control* layer on top of it
+(model routing, live prompt edits, evals, auto-rollback).
 
-Two endpoints matter:
-  POST /chat              — the chat widget on the storefront
-  GET  /api/model-info    — synthetic evaluation; used by the Ch1 check
+Endpoints:
+  POST /chat              — chat widget on the storefront (stub until Ch01)
+  GET  /api/model-info    — synthetic Config evaluation; used by the Ch02 check
 """
 import logging
 import os
@@ -131,63 +131,26 @@ def chat(req: ChatRequest):
             },
         )
 
-    context = _build_context(req.session_id, req.user_tier)
-    cfg = ai_client.completion_config(OTTO_CONFIG_KEY, context, FALLBACK_CONFIG)
-
-    if not cfg.enabled or cfg.model is None:
-        return JSONResponse(status_code=503, content={
-            "response": "Otto isn't enabled. Check the Config targeting.",
-            "turn": turn, "turn_limit": TURN_LIMIT,
-        })
-
-    system_blocks = []
-    seed_messages = []
-    for m in cfg.messages or []:
-        if m.role == "system":
-            system_blocks.append({"text": m.content})
-        else:
-            seed_messages.append({"role": m.role, "content": [{"text": m.content}]})
-
-    with _state_lock:
-        prior = list(_history[req.session_id])
-    history_blocks = [{"role": m.role, "content": [{"text": m.content}]} for m in prior]
-    bedrock_messages = seed_messages + history_blocks + [
-        {"role": "user", "content": [{"text": req.message}]}
-    ]
-
-    model_id = resolve_bedrock_model(cfg.model.name)
-    tracker = cfg.create_tracker()
-
-    try:
-        response = tracker.track_bedrock_converse_metrics(
-            bedrock.converse(modelId=model_id, messages=bedrock_messages, system=system_blocks)
-        )
-    except ClientError as e:
-        code = e.response.get("Error", {}).get("Code")
-        log.error("Bedrock ClientError: %s", code)
-        return JSONResponse(status_code=502, content={
-            "response": _bedrock_user_message(code),
-            "turn": turn, "turn_limit": TURN_LIMIT,
-        })
-
-    assistant_text = _extract_text(response)
-    with _state_lock:
-        _history[req.session_id].append(LDMessage(role="user", content=req.message))
-        _history[req.session_id].append(LDMessage(role="assistant", content=assistant_text))
-
-    usage = response.get("usage") or {}
-    metrics = response.get("metrics") or {}
-    log.info(
-        "chat session=%s tier=%s turn=%d model=%s tokens_in=%s tokens_out=%s latency_ms=%s",
-        req.session_id, req.user_tier, turn, cfg.model.name,
-        usage.get("inputTokens"), usage.get("outputTokens"), metrics.get("latencyMs"),
+    # ─────────────────────────────────────────────────────────────────────
+    # Challenge 01 paste block — replace this stub with real Otto code.
+    # The lab instructions tell you exactly what to put between these
+    # markers. Until you do, Otto returns a canned not-wired-up response.
+    # ─────────────────────────────────────────────────────────────────────
+    assistant_text = (
+        "Otto isn't wired up yet. Complete Challenge 01 to bring him to life."
     )
+    model_id = "(unwired)"
+    log.info(
+        "chat session=%s tier=%s turn=%d model=%s",
+        req.session_id, req.user_tier, turn, model_id,
+    )
+    # ─── End Challenge 01 paste block ────────────────────────────────────
 
     return ChatResponse(
         response=assistant_text,
         turn=turn,
         turn_limit=TURN_LIMIT,
-        model=cfg.model.name,
+        model=model_id,
     )
 
 
@@ -211,4 +174,4 @@ def _extract_text(response: dict) -> str:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=3000)
+    uvicorn.run(app, host="0.0.0.0", port=3333)

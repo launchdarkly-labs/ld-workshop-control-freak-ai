@@ -1,22 +1,23 @@
 slug: control-freak-ai
-title: "Control Freak — Hands-On with AgentControl"
+id: zfflynfbphi0
+title: Control Freak — Hands-On with AgentControl
 teaser: Route premium tier to a stronger model, tune the prompt live, eval before
   you ship, and watch LaunchDarkly auto-roll back a regression — without a redeploy.
 description: AgentControl lets you treat prompts, models, and quality gates as runtime
   configuration. In this track you'll route Claude Sonnet to premium shoppers (Haiku
   to everyone else), edit Otto's prompt live without redeploying, run an offline eval
   with an LLM judge, then trigger a deliberately-bad scenario and watch AgentControl
-  auto-roll back the variation. By the end you'll know how to be a control freak
-  about your AI — in the good way.
+  auto-roll back the variation. By the end you'll know how to be a control freak about
+  your AI — in the good way.
 icon: https://launchdarkly.com/favicon-dark-mode.png
 tags:
+- evals
 - launchdarkly
+- feature-flags
 - agentcontrol
 - ai-configs
-- evals
 - model-routing
 - auto-rollback
-- feature-flags
 owner: launchdarkly
 developers:
 - kcochran@launchdarkly.com
@@ -35,4 +36,5 @@ lab_config:
   hideStopButton: false
   default_layout: AssignmentRight
   default_layout_sidebar_size: 25
+checksum: "6720455729710404299"
 enhanced_loading: false

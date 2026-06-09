@@ -12,7 +12,7 @@
 #
 set -euo pipefail
 
-REPO_ROOT="/opt/control-freak-ai"
+REPO_ROOT="/opt/ld/ld-workshop-control-freak-ai"
 
 # 1. Wait for instruqt bootstrap
 until [ -f /opt/instruqt/bootstrap/host-bootstrap-completed ]; do
@@ -35,7 +35,9 @@ export LD_PROJECT_KEY
   echo "export LD_PROJECT_KEY=\"${LD_PROJECT_KEY}\""
 } | tee -a ~/.bashrc ~/.profile > /dev/null
 
-# 3. Bootstrap LD resources for this track (segment, Config, variations)
+# 3. Bootstrap LD resources for this track. The bootstrap script creates the
+#    premium-users segment only — the AgentControl Config and its variations
+#    are created by the learner in Ch01 (Otto is Born) and Ch02 (Model Routing).
 "${REPO_ROOT}/scripts/bootstrap-ld.sh"
 
 # Source the env that bootstrap-ld.sh emitted (LD_SDK_KEY etc.)
@@ -57,5 +59,5 @@ sed -i "s|^AWS_REGION=.*|AWS_REGION=${AWS_REGION}|g"             "$APP_ENV"
 
 # 5. Restart the service. `restart` only sends SIGHUP which the app ignores,
 #    so we stop+start to force a fresh process with the new env.
-service togglewear stop || true
-service togglewear start
+service togglewearcf stop || true
+service togglewearcf start

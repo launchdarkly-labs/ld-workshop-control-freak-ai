@@ -14,7 +14,7 @@
 #
 set -euo pipefail
 
-APP_URL="${APP_URL:-http://localhost:3000}"
+APP_URL="${APP_URL:-http://localhost:3333}"
 SESSION_PREFIX="bad-scenario-$(date +%s)"
 
 PROMPTS=(

@@ -5,7 +5,7 @@
 #
 set -euo pipefail
 
-PROBE=$(curl -fsS "http://localhost:3000/api/model-info?plan=premium" | jq -r '.model')
+PROBE=$(curl -fsS "http://localhost:3333/api/model-info?plan=premium" | jq -r '.model')
 
 if [[ "$PROBE" == *"haiku"* ]]; then
   echo "OK: premium tier is being served a haiku variation ($PROBE) — rollback fired."

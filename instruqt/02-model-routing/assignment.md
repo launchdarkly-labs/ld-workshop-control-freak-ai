@@ -6,26 +6,27 @@ teaser: Send premium shoppers to Claude Sonnet, keep everyone else on Haiku — 
   from AgentControl, no redeploy.
 notes:
 - type: text
-  contents: ToggleWear wants premium subscribers to get better answers from Otto
-    using Claude Sonnet, while keeping costs low for free-tier shoppers with Haiku.
-    Instead of branching in code, you'll do it with an AgentControl Config and a
-    targeting rule.
+  contents: ToggleWear wants premium subscribers to get better answers from Otto using
+    Claude Sonnet, while keeping costs low for free-tier shoppers with Haiku. Instead
+    of branching in code, you'll do it with an AgentControl Config and a targeting
+    rule.
 tabs:
-- id: launchdarkly
+- id: goygwiedmm6t
   title: LaunchDarkly
   type: browser
   hostname: launchdarkly
-- id: togglewear
+- id: qtkaszi2g6eg
   title: ToggleWear
   type: service
   hostname: workstation
-  port: 3000
-- id: terminal
+  port: 3333
+- id: 1tajqkvkvvst
   title: Terminal
   type: terminal
   hostname: workstation
 difficulty: ""
 timelimit: 1200
+enhanced_loading: null
 ---
 
 # Why route by tier?
@@ -34,22 +35,27 @@ A single model rarely fits every customer. Premium shoppers expect nuance and pa
 
 By the end of this challenge:
 
-- Otto's `otto-assistant` Config has two variations: **Default — Haiku** and **Premium — Sonnet** (both already created for you).
+- Otto's `otto-assistant` Config has a second variation, **Premium — Sonnet**, sitting alongside the **Default — Haiku** one you created in Ch01.
 - A targeting rule routes the `premium-users` segment to the Sonnet variation.
-- The Config is **On**, and the chat app's model badge changes when you toggle your tier.
+- The chat app's model badge changes when you toggle your tier between Free and Premium.
 
-# Review the variations
+# Create the Premium variation
 
-Open the [LaunchDarkly](#tab-0) tab. Navigate to **Agents → Configs → otto-assistant**.
+Open the [LaunchDarkly](#tab-0) tab. Navigate to **Agents → Configs → otto-assistant** and click **+ Add variation**.
 
-You should see two variations:
+1. **Name**:
+```text
+Premium — Sonnet
+```
+2. **Key**:
+```text
+premium-sonnet
+```
+3. **Model**: pick **Bedrock** → **anthropic.claude-sonnet-4-6**.
+4. **System prompt**: use the *same* starter prompt as the Haiku variation. (You can copy-paste it from the Default — Haiku variation page.) Keeping the prompt identical isolates the experiment to the model swap — that matters for the eval in Ch04.
+5. Click **Review and save**, then **Save changes**.
 
-| Variation | Model | Use case |
-|---|---|---|
-| Default — Haiku | `claude-haiku-4-5-20251001` | Free-tier default |
-| Premium — Sonnet | `claude-sonnet-4-6` | Premium subscribers |
-
-Both share the same starter system prompt. We'll change that in Challenge 2.
+You now have two variations with identical prompts and different models. The next step is to *route* between them.
 
 # Add the targeting rule
 
@@ -61,11 +67,6 @@ Both share the same starter system prompt. We'll change that in Challenge 2.
 6. Serve: **Premium — Sonnet**.
 7. Confirm the **Default rule** serves **Default — Haiku**.
 8. Click **Review and save**, then **Save changes**.
-
-# Turn the Config on
-
-1. Still on the Targeting tab, flip the environment toggle to **On**.
-2. Save.
 
 > ⚠️ **mode-permanent** — about that toggle
 >

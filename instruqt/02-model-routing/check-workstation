@@ -4,7 +4,7 @@ set -euo pipefail
 
 probe() {
   local plan="$1"
-  curl -fsS "http://localhost:3000/api/model-info?plan=${plan}" | jq -r '.model'
+  curl -fsS "http://localhost:3333/api/model-info?plan=${plan}" | jq -r '.model'
 }
 
 PREMIUM_MODEL=$(probe premium)

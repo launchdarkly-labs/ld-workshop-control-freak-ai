@@ -1,0 +1,17 @@
+#!/bin/bash
+# Ch01 — Otto is Born.
+#
+# Track-level setup already created the premium-users segment and wired LD
+# credentials into app/.env. The togglewear service should be running with
+# the stub /chat handler. Nothing per-challenge to provision.
+set -euo pipefail
+
+for _ in {1..30}; do
+  if curl -fsS http://localhost:3333/healthz > /dev/null; then
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "ToggleWear did not become ready on port 3333" >&2
+exit 1

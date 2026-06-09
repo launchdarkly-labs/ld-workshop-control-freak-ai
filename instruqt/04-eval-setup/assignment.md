@@ -6,25 +6,26 @@ teaser: Run an offline eval against a pre-loaded 40-row dataset with an LLM judg
   then compare quality scores across both variations.
 notes:
 - type: text
-  contents: Before promoting Sonnet to all premium users, the team wants
-    confidence the variation actually produces better answers. AgentControl
-    Evals give you that confidence in minutes.
+  contents: Before promoting Sonnet to all premium users, the team wants confidence
+    the variation actually produces better answers. AgentControl Evals give you that
+    confidence in minutes.
 tabs:
-- id: launchdarkly
+- id: rsp0jjjmerum
   title: LaunchDarkly
   type: browser
   hostname: launchdarkly
-- id: togglewear
+- id: rr2do9ytkklb
   title: ToggleWear
   type: service
   hostname: workstation
-  port: 3000
-- id: terminal
+  port: 3333
+- id: 5x7p4yehwcrh
   title: Terminal
   type: terminal
   hostname: workstation
 difficulty: ""
 timelimit: 900
+enhanced_loading: null
 ---
 
 # What an offline eval is

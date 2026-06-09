@@ -1,0 +1,74 @@
+#!/bin/bash
+#
+# Verify the learner has:
+#   1. created the `otto-assistant` Config
+#   2. added the `default-haiku` variation with a Haiku model
+#   3. set the Test environment's Default rule to default-haiku
+#   4. replaced the paste-block stub in server.py with real SDK code
+#
+set -euo pipefail
+
+LD_API="${LD_API:-https://app.launchdarkly.com/api/v2}"
+AG_TOKEN="${LAUNCHDARKLY_AG_API_TOKEN:-$LAUNCHDARKLY_ACCESS_TOKEN}"
+REPO_ROOT="${REPO_ROOT:-/opt/ld/ld-workshop-control-freak-ai}"
+
+: "${LD_PROJECT_KEY:?LD_PROJECT_KEY must be set}"
+
+CONFIG=$(curl -fsS -X GET \
+  "${LD_API}/projects/${LD_PROJECT_KEY}/ai-configs/otto-assistant" \
+  -H "Authorization: ${AG_TOKEN}" 2>/dev/null || echo '{}')
+
+if [ "$(echo "$CONFIG" | jq -r '.key // "null"')" = "null" ]; then
+  echo "FAIL: the otto-assistant Config does not exist yet." >&2
+  echo "Follow the 'Create Otto's Config' steps in the assignment." >&2
+  exit 1
+fi
+
+HAIKU_VAR=$(echo "$CONFIG" | jq -r '.variations[]? | select(.key=="default-haiku")')
+if [ -z "$HAIKU_VAR" ]; then
+  echo "FAIL: variation 'default-haiku' is missing." >&2
+  echo "Add the variation named 'Default — Haiku' with key 'default-haiku'." >&2
+  exit 1
+fi
+
+MODEL_NAME=$(echo "$HAIKU_VAR" | jq -r '.model.name // .modelConfigKey // ""')
+if [[ "$MODEL_NAME" != *"haiku"* ]]; then
+  echo "FAIL: default-haiku is not pointing at a Haiku model (got: $MODEL_NAME)." >&2
+  exit 1
+fi
+
+SYSTEM_MSG=$(echo "$HAIKU_VAR" | jq -r '.messages[]? | select(.role=="system") | .content' | head -c 1)
+if [ -z "$SYSTEM_MSG" ]; then
+  echo "FAIL: default-haiku is missing a system prompt." >&2
+  exit 1
+fi
+
+TARGETING=$(curl -fsS -X GET \
+  "${LD_API}/projects/${LD_PROJECT_KEY}/ai-configs/otto-assistant/targeting" \
+  -H "Authorization: ${AG_TOKEN}" 2>/dev/null || echo '{}')
+HAIKU_NAME=$(echo "$CONFIG" | jq -r '.variations[]? | select(.key=="default-haiku") | .name')
+FALLTHROUGH_IDX=$(echo "$TARGETING" | jq -r '.environments.test.fallthrough.variation // empty')
+FALLTHROUGH_NAME=$(echo "$TARGETING" | jq -r ".variations[${FALLTHROUGH_IDX:-99}].name // empty")
+if [ "$FALLTHROUGH_NAME" != "$HAIKU_NAME" ]; then
+  echo "FAIL: the Test environment's Default rule isn't serving Default — Haiku." >&2
+  exit 1
+fi
+
+if ! grep -q 'ai_client.completion_config(OTTO_CONFIG_KEY' "${REPO_ROOT}/app/server.py"; then
+  echo "FAIL: server.py still has the paste-block stub. Replace it with the SDK code from the lab." >&2
+  exit 1
+fi
+
+# Confirm a real chat call now returns a non-stub response.
+SESSION="check-$(date +%s)"
+RESP=$(curl -fsS -X POST http://localhost:3333/chat \
+  -H "Content-Type: application/json" \
+  -d "$(jq -nc --arg sid "$SESSION" '{message: "test", user_tier: "free", session_id: $sid}')" \
+  | jq -r '.model // ""')
+
+if [[ "$RESP" == "(unwired)" || -z "$RESP" ]]; then
+  echo "FAIL: /chat is still returning the stub. Make sure you saved server.py and the service restarted." >&2
+  exit 1
+fi
+
+echo "OK: Otto is alive. Config exists, default-haiku is served, server is wired (model=$RESP)."

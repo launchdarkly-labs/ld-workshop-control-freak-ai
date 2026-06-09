@@ -2,29 +2,30 @@
 slug: auto-rollback
 type: challenge
 title: Guardrails That Fire Themselves
-teaser: Wire a judge-based monitoring rule to the Config, trigger a deliberately
-  bad scenario, and watch AgentControl roll back the variation automatically.
+teaser: Wire a judge-based monitoring rule to the Config, trigger a deliberately bad
+  scenario, and watch AgentControl roll back the variation automatically.
 notes:
 - type: text
   contents: Quality regressions happen. The team wants LaunchDarkly to detect when
-    a variation's judge scores drop below a threshold and roll back on its own —
-    no 2 a.m. pager.
+    a variation's judge scores drop below a threshold and roll back on its own — no
+    2 a.m. pager.
 tabs:
-- id: launchdarkly
+- id: yg2vo35pypoa
   title: LaunchDarkly
   type: browser
   hostname: launchdarkly
-- id: togglewear
+- id: 1pkelm8evl41
   title: ToggleWear
   type: service
   hostname: workstation
-  port: 3000
-- id: terminal
+  port: 3333
+- id: vn6hrvmyuyyc
   title: Terminal
   type: terminal
   hostname: workstation
 difficulty: ""
 timelimit: 900
+enhanced_loading: null
 ---
 
 # Add a judge-based monitoring rule

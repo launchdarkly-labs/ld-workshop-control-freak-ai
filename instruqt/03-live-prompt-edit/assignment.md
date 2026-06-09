@@ -2,28 +2,29 @@
 slug: live-prompt-edit
 type: challenge
 title: Change the Prompt, Not the Code
-teaser: Edit Otto's system prompt in the UI and watch the running app behave
-  differently on the very next message — no deploy, no restart.
+teaser: Edit Otto's system prompt in the UI and watch the running app behave differently
+  on the very next message — no deploy, no restart.
 notes:
 - type: text
-  contents: The product team wants to tweak how Otto sounds. With AgentControl,
-    that's a UI change, not a pull request.
+  contents: The product team wants to tweak how Otto sounds. With AgentControl, that's
+    a UI change, not a pull request.
 tabs:
-- id: launchdarkly
+- id: xr08eynfyg0c
   title: LaunchDarkly
   type: browser
   hostname: launchdarkly
-- id: togglewear
+- id: darkjycggkkd
   title: ToggleWear
   type: service
   hostname: workstation
-  port: 3000
-- id: terminal
+  port: 3333
+- id: m3hqybwy0zsy
   title: Terminal
   type: terminal
   hostname: workstation
 difficulty: ""
 timelimit: 600
+enhanced_loading: null
 ---
 
 # Feel the difference first
