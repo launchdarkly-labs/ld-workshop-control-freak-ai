@@ -1,6 +1,0 @@
-#!/bin/sh
-# Soft check — the assignment asks the learner to confirm they saw behavior
-# change. There's no signal we can read from the LD API that distinguishes
-# "they edited the prompt" from "they edited it back" reliably enough to
-# gate progress, and human verification is the pedagogical point.
-exit 0

@@ -1,6 +1,0 @@
-#!/bin/bash
-# Ch2 has no per-challenge setup. The app is already running from Ch1.
-# Intentionally do NOT reset the prompt baseline — letting the learner walk
-# into whatever weirdness they left on the Sonnet variation is fine; the
-# edit they're about to make is on the Haiku variation.
-exit 0
