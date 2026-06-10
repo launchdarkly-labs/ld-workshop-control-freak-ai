@@ -17,6 +17,9 @@
 
 set -e
 
+# Hacky workaround until AgentControl is supported in service tokens
+export LAUNCHDARKLY_ACCESS_TOKEN="${LAUNCHDARKLY_AG_API_TOKEN}"
+
 # 1. Pre-wire the brand-voice judge (judge config + metric + server.py
 #    invocation). Without this, the guarded rollout has no metric to watch.
 cd /opt/ld/ai-configs-intro/terraform/evaluate-03

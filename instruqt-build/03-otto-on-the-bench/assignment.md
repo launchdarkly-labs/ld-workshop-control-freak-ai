@@ -1,6 +1,6 @@
 ---
 slug: otto-on-the-bench
-id: hvxtrzt1nel4
+id: kgatkmklcjdi
 type: challenge
 title: Otto on the Bench
 teaser: Run an offline evaluation against a golden dataset of customer questions to
@@ -12,16 +12,16 @@ notes:
     LLM-as-a-judge, and read the results to spot where he's weak. Knowing where Otto
     slips is what makes the guarded rollout in the next challenge meaningful.
 tabs:
-- id: qhyrqbdxzwcm
+- id: 2ap2vfy76d99
   title: LaunchDarkly
   type: browser
   hostname: launchdarkly
-- id: l7zeajhisjha
+- id: ytdhugkaopos
   title: ToggleWear
   type: service
   hostname: workstation
   port: 3000
-- id: x4by7yxkmroz
+- id: ntfnvsewbpt7
   title: Code Editor
   type: service
   hostname: workstation
@@ -52,40 +52,32 @@ The dataset deliberately mixes easy product questions ("Got any t-shirts?") with
 # Create the evaluation
 
 1. Click **Evaluations** in the left navigation.
-2. Click **Create evaluation**.
-3. For **Name**, enter:
+2. Click **New playground**.
+3. Click **Untitled Playground** at the top and enter:
 ```text
 Otto Born baseline
 ```
-4. For **Dataset**, select **customer-questions.jsonl**.
-5. For **Config**, select **Otto Assistant**.
-6. For **Variations**, select **Otto (Born)**. (Only the Born variation — we want to know how the cheap default Otto performs before we touch anything.)
-7. Click **Next** to move to the acceptance criteria step.
+4. For side **A**, from the list of models, select **Anthropic** --> **claude-haiku-4-5-20251001**.
+5. Click the ![Load Config](../assets/otto-load-config.png) icon to load from a config.
+6. Click **Otto Assistant** on the left, and on the right, select the **Otto (Born)** variation.
+7. Click **Load config**.
+8. For side **B**, from the list of models, select **Anthropic** --> **claude-sonnet-4-6**.
+9. Click the ![Load Config](../assets/otto-load-config.png) icon to load from a config.
+10. Click **Otto Assistant** on the left, and on the right, select the **Otto (Premium)** variation.
+11. Click **Load config**.
+12. At the bottom of the screen click **Select a dataset to evaluate**, and select **Otto Born baseline**.
+13. To the right of the selector, click **All rows**.
 
 # Configure acceptance criteria
 
-The evaluation needs to know how to grade Otto's responses against each row's `expected_output`. You'll set up a single LLM-as-a-judge criterion: a small grading prompt that compares Otto's actual answer to the expected rubric and returns a numeric score.
+The evaluation needs to know how to grade Otto's responses against each row's `expected_output`. You'll set up one criteria: a grader that checks for relevancy.
 
-1. In the **Acceptance criteria** panel, click **Add criterion**.
-2. Choose **LLM-as-a-judge** as the criterion type.
-3. For **Criterion name**, enter:
-```text
-Matches expected output
-```
-4. For the **Judge prompt**, enter:
-```text
-Evaluate whether the response satisfies the expected output criteria.
-
-Expected: {{expected_output}}
-Response: {{response}}
-
-Score 1.0 if the response clearly meets the criteria, 0.0 if it clearly doesn't, 0.5 if partial. Respond with only a number.
-```
-5. Click **Save**.
+1. In the **Acceptance criteria** panel on the right, click **Add criteria** and select **Answer Relevancy**.
+2. Leave the defaults as-is.
 
 # Run the evaluation
 
-1. Click **Run evaluation**.
+1. At the top right, click **Run all**.
 2. The run takes roughly a minute — Otto answers each of the 30 questions and the judge grades each answer.
 
 # Read the results

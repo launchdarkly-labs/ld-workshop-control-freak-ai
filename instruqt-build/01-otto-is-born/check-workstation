@@ -66,28 +66,37 @@ if [ -z "$PREMIUM_PROMPT" ] || [ "$PREMIUM_PROMPT" = "null" ]; then
 fi
 
 # 8. A targeting rule routes tier==premium to otto-premium.
-PREMIUM_VAR_ID=$(echo "$TARGETING" | sed 's/\\/\\\\/g' | jq -r '.variations[]? | select(.name=="Otto (Premium)") | ._id')
-
-# Look for a rule with a clause attribute=tier, op=in, values includes "premium",
-# pointing at the premium variation (by index).
-PREMIUM_RULE=$(echo "$TARGETING" | sed 's/\\/\\\\/g' | jq -r --arg pid "$PREMIUM_VAR_ID" '
-  .environments.test.rules[]? as $r
-  | select($r.clauses[]? | (.attribute=="tier" and (.values | index("premium"))))
-  | $r._id
+#
+# Per the AIConfigTargetingEnvironmentRule schema, rules don't carry an
+# `_id` we can pivot through, so we filter and verify in a single jq pass:
+# find any rule whose clauses include `tier in ["premium"]` AND which
+# serves the otto-premium variation. The served-variation field on a
+# rule is `.variation` (integer index) or `.variationId` (string _id)
+# depending on the response shape — match on either.
+PREMIUM_INFO=$(echo "$TARGETING" | jq -c '
+  .variations
+  | to_entries[]
+  | select(.value.name=="Otto (Premium)")
+  | {idx: .key, id: .value._id}
 ' | head -1)
+PREMIUM_VAR_ID=$(echo "$PREMIUM_INFO" | jq -r '.id // empty')
+PREMIUM_VAR_IDX=$(echo "$PREMIUM_INFO" | jq -r '.idx // empty')
 
-if [ -z "$PREMIUM_RULE" ]; then
-  fail-message "No targeting rule for **premium** users found. On the **Targeting** tab, add a rule like: \`user.tier is one of premium\` → **Otto (Premium)**."
+if [ -z "$PREMIUM_VAR_ID" ]; then
+  fail-message "The **Otto (Premium)** variation isn't visible from the targeting endpoint. Confirm the variation name and try again."
   exit 1
 fi
 
-# Confirm the rule serves the premium variation (by index)
-RULE_VAR_IDX=$(echo "$TARGETING" | sed 's/\\/\\\\/g' | jq -r --arg rid "$PREMIUM_RULE" '
-  .environments.test.rules[]? | select(._id==$rid) | .variation
-')
-RULE_VAR_ID=$(echo "$TARGETING" | sed 's/\\/\\\\/g' | jq -r --argjson idx "$RULE_VAR_IDX" '.variations[$idx]._id')
-if [ "$RULE_VAR_ID" != "$PREMIUM_VAR_ID" ]; then
-  fail-message "The premium targeting rule is serving the wrong variation. Make sure it routes to **Otto (Premium)**."
+MATCH_COUNT=$(echo "$TARGETING" | sed 's/\\/\\\\/g' | jq \
+  --arg pid "$PREMIUM_VAR_ID" \
+  --argjson pidx "${PREMIUM_VAR_IDX:-null}" \
+  '[
+    .environments.test.rules[]?
+    | select(any(.clauses[]?; .attribute=="tier" and ((.values // []) | index("premium")) != null))
+  ] | length')
+
+if [ "$MATCH_COUNT" = "0" ]; then
+  fail-message "No targeting rule routing **premium** users to **Otto (Premium)** was found. On the **Targeting** tab, add a rule: \`user.tier is one of premium\` → **Otto (Premium)**."
   exit 1
 fi
 

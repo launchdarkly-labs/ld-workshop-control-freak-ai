@@ -16,7 +16,7 @@ API="https://app.launchdarkly.com/api/v2"
 
 CONFIG=$(curl -fsS -X GET \
   "${API}/projects/${LD_PROJECT_KEY}/ai-configs/otto-assistant" \
-  -H "Authorization: ${LAUNCHDARKLY_ACCESS_TOKEN}")
+  -H "Authorization: ${LAUNCHDARKLY_AG_API_TOKEN}")
 
 STIFF=$(echo "$CONFIG" | jq -r '.variations[]? | select(.key=="otto-stiff") | .modelConfigKey // ""')
 if [ -z "$STIFF" ]; then
@@ -36,7 +36,7 @@ fi
 
 TARGETING=$(curl -fsS -X GET \
   "${API}/projects/${LD_PROJECT_KEY}/ai-configs/otto-assistant/targeting" \
-  -H "Authorization: ${LAUNCHDARKLY_ACCESS_TOKEN}")
+  -H "Authorization: ${LAUNCHDARKLY_AG_API_TOKEN}")
 
 HAS_ROLLOUT=$(echo "$TARGETING" | jq -r '.environments.test.fallthrough.rollout // empty')
 if [ -z "$HAS_ROLLOUT" ]; then
