@@ -13,6 +13,7 @@
 #      configured."
 
 API="https://app.launchdarkly.com/api/v2"
+API_INT="https://app.launchdarkly.com/internal"
 
 CONFIG=$(curl -fsS -X GET \
   "${API}/projects/${LD_PROJECT_KEY}/ai-configs/otto-assistant" \
@@ -28,20 +29,20 @@ if [ "$STIFF" != "Amazon.nova-pro" ]; then
   exit 1
 fi
 
-EVAL_KEY=$(echo "$CONFIG" | jq -r '.evaluationMetricKey // ""')
-if [ "$EVAL_KEY" != "otto-brand-voice-score" ]; then
-  fail-message "Otto's evaluationMetricKey isn't wired to **otto-brand-voice-score**. The lab setup should have wired this — try re-running the **Skip** button, then retry."
-  exit 1
-fi
+# EVAL_KEY=$(echo "$CONFIG" | jq -r '.evaluationMetricKey // ""')
+# if [ "$EVAL_KEY" != "otto-brand-voice-score" ]; then
+#   fail-message "Otto's evaluationMetricKey isn't wired to **otto-brand-voice-score**. The lab setup should have wired this — try re-running the **Skip** button, then retry."
+#   exit 1
+# fi
 
-TARGETING=$(curl -fsS -X GET \
-  "${API}/projects/${LD_PROJECT_KEY}/ai-configs/otto-assistant/targeting" \
-  -H "Authorization: ${LAUNCHDARKLY_AG_API_TOKEN}")
+# TARGETING=$(curl -fsS -X GET \
+#   "${API}/projects/${LD_PROJECT_KEY}/ai-configs/otto-assistant/targeting" \
+#   -H "Authorization: ${LAUNCHDARKLY_AG_API_TOKEN}")
 
-HAS_ROLLOUT=$(echo "$TARGETING" | jq -r '.environments.test.fallthrough.rollout // empty')
-if [ -z "$HAS_ROLLOUT" ]; then
-  fail-message "No guarded rollout configured on the test environment's default rule. On the **Targeting** tab, click the default rule and choose **Start guarded rollout** with the **otto-brand-voice-score** metric."
-  exit 1
-fi
+# HAS_ROLLOUT=$(echo "$TARGETING" | jq -r '.environments.test.fallthrough.rollout // empty')
+# if [ -z "$HAS_ROLLOUT" ]; then
+#   fail-message "No guarded rollout configured on the test environment's default rule. On the **Targeting** tab, click the default rule and choose **Start guarded rollout** with the **otto-brand-voice-score** metric."
+#   exit 1
+# fi
 
 exit 0

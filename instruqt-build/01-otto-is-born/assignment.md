@@ -208,16 +208,22 @@ You work at ToggleWear and you're talking to a premium customer. Take a little m
 ```
 6. Click **Review and save**, then **Save changes**.
 
+Before you continue, due to caching in the virtual browser, you'll need to refresh the virtual browser (not your browser).
+
+![Refresh Virtual Browser](../assets/otto-browser-refresh.png)
+
 # Route premium shoppers to the premium Otto
 
 Click the **Targeting** tab. Make sure the environment selector reads **test**.
 
 1. Above the **Default rule**, click **+** and select **Build a custom rule**.
+2. Press `]` to hide the right pane.
 2. Build the clause:
 	1. Context kinds: **user**
 	2. Attribute: **tier**
 	3. Operator: **is one of**
 	4. Values: **premium** _&lt;ENTER&gt;_
+    > (a) You may need to manually enter **tier**. (b) After you type in **premium** you must press the Enter key.
 3. For the variation dropdown, select **Otto (Premium)**.
 4. Leave the **Default rule** as **Otto (Born)** — free shoppers and anyone without a tier still get the Haiku Otto.
 6. Click **Review and save**, then **Save changes**.

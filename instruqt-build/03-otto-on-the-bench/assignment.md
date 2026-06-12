@@ -39,38 +39,53 @@ Before we let Otto loose on more traffic, we'll grade him **offline**. Offline e
 
 A 30-question dataset is already in your project. Your job is to point an evaluation at it, set the grading rubric, and read what comes back.
 
-# Inspect the dataset
+<!-- # Inspect the dataset
 
 Open the [LaunchDarkly](#tab-0) tab.
 
 1. From the left-hand navigation, click **Datasets**.
 2. Find **customer-questions.jsonl** and click it.
-3. The detail page shows 30 rows. Click through a few to see the shape: each row has an `input` (the customer question), an `expected_output` (a rubric describing what a good answer looks like), and a `metadata` object tagging the question's category and difficulty.
+3. The detail page shows 30 rows. Click through a few to see the shape: each row has an `input` (the customer question), an `expected_output` (a rubric describing what a good answer looks like), and a `metadata` object tagging the question's category and difficulty. -->
 
 The dataset deliberately mixes easy product questions ("Got any t-shirts?") with hard ones — off-topic queries, ambiguous requests, even a prompt-injection attempt — so the results tell a story rather than a flat all-pass.
 
 # Create the evaluation
 
-1. Click **Evaluations** in the left navigation.
+1. Click **Playgrounds** in the left navigation.
 2. Click **New playground**.
 3. Click **Untitled Playground** at the top and enter:
 ```text
 Otto Born baseline
 ```
-4. For side **A**, from the list of models, select **Anthropic** --> **claude-haiku-4-5-20251001**.
-5. Click the ![Load Config](../assets/otto-load-config.png) icon to load from a config.
-6. Click **Otto Assistant** on the left, and on the right, select the **Otto (Born)** variation.
-7. Click **Load config**.
-8. For side **B**, from the list of models, select **Anthropic** --> **claude-sonnet-4-6**.
-9. Click the ![Load Config](../assets/otto-load-config.png) icon to load from a config.
-10. Click **Otto Assistant** on the left, and on the right, select the **Otto (Premium)** variation.
-11. Click **Load config**.
-12. At the bottom of the screen click **Select a dataset to evaluate**, and select **Otto Born baseline**.
-13. To the right of the selector, click **All rows**.
+
+# Side **A**
+
+1. Click the ![Load Config](../assets/otto-load-config.png) icon to load from a config.
+2. Click **Otto Assistant** on the left, and on the right, select the **Otto (Born)** variation.
+3. Click **Load config**.
+4. From the list of models, select **Anthropic** --> **claude-haiku-4-5-20251001**.
+5. Below the loaded prompt textarea, click **Add message**.
+6. In the new prompt textarea, enter `{{input}}`.
+
+# Side **B**
+
+1. Click the ![Load Config](../assets/otto-load-config.png) icon to load from a config.
+2. Click **Otto Assistant** on the left, and on the right, select the **Otto (Premium)** variation.
+3. Click **Load config**.
+4. From the list of models, select **Anthropic** --> **claude-sonnet-4-6**.
+5. Below the loaded prompt textarea, click **Add message**.
+6. In the new prompt textarea, enter `{{input}}`.
+
+# Select Dataset
+
+1. At the bottom of the screen click **Select a dataset to evaluate**, and select **Otto Born baseline**.
+2. To the right of the selector, click **All rows**.
 
 # Configure acceptance criteria
 
 The evaluation needs to know how to grade Otto's responses against each row's `expected_output`. You'll set up one criteria: a grader that checks for relevancy.
+
+**Note**: If the right-hand pane is still collapsed, press `]` to open it.
 
 1. In the **Acceptance criteria** panel on the right, click **Add criteria** and select **Answer Relevancy**.
 2. Leave the defaults as-is.

@@ -14,20 +14,24 @@ notes:
     lab has pre-wired a brand-voice judge that scores every Otto response — that's
     the metric your rollout will watch.
 tabs:
-- id: ytkgelnijkrw
+- id: cc82plsequyu
   title: LaunchDarkly
   type: browser
   hostname: launchdarkly
-- id: b61dfbqfbvwv
+- id: wjhsi3gqysle
   title: ToggleWear
   type: service
   hostname: workstation
   port: 3000
-- id: lzm13t9ykece
+- id: 8p00gld7tgxh
   title: Code Editor
   type: service
   hostname: workstation
   port: 8080
+- id: tjpfhwxkggo6
+  title: Terminal
+  type: terminal
+  hostname: workstation
 difficulty: basic
 timelimit: 1200
 enhanced_loading: null
@@ -43,6 +47,10 @@ Most of this challenge is already wired by the lab:
 
 Your job is to **configure a guarded rollout** that splits traffic between Otto (Born) and Otto (Stiff), watches the `otto-brand-voice-score` metric, and rolls back automatically if Stiff's score regresses.
 
+Before you continue, due to caching in the virtual browser, you'll need to refresh the virtual browser (not your browser).
+
+![Refresh Virtual Browser](../assets/otto-browser-refresh.png)
+
 # Inspect what changed
 
 1. Open the [LaunchDarkly](#tab-0) tab.
@@ -55,13 +63,12 @@ Your job is to **configure a guarded rollout** that splits traffic between Otto 
 1. Click the **Targeting** tab. Confirm the environment is **test**.
 2. Click the **Default rule** (the fallthrough). You should see an option to **Start guarded rollout**.
 3. Configure:
-   - **Test variation**: **Otto (Stiff)**
-   - **Control variation**: **Otto (Born)**
-   - **Metric to watch**: **otto-brand-voice-score**
-   - **Regression direction**: lower is worse (the metric's success criteria is HigherThanBaseline)
-   - **Stages**: 10% → 25% → 50% → 100% (or whatever the UI offers). Each stage's monitoring window should be 1-2 minutes — short enough that the rollout completes inside the lab budget.
-4. **On regression**: choose **Rollback** (not just notify).
-5. Click **Start**.
+   - **Original variation**: **Otto (Born)**
+   - **Target variation**: **Otto (Stiff)**
+   - **Metric to watch**: **Otto Brand Voice Score**
+   - **Otto Brand Voice Score**: Check **Auto rollback**
+   - **Rollout duration**: 1 hour
+4. Click **Review and save**, then **Save changes**.
 
 # Watch what happens
 
