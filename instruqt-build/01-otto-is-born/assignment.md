@@ -76,7 +76,7 @@ otto-born
 ```
 4. Under **Model**, in the search box, paste and select:
 ```text
-**anthropic.claude-haiku-4-5-20251001-v1:0** from the list.
+anthropic.claude-haiku-4-5-20251001-v1:0
 ```
 5. In the prompt text area, select **System**, and add this content in the prompt:
 ```text
@@ -205,7 +205,7 @@ otto-premium
 ```
 4. Under **Model**, in the search box, paste and select:
 ```text
-**anthropic.claude-sonnet-4-6**
+anthropic.claude-sonnet-4-6
 ```
 5. In prompt text area, make sure **System** is selected and enter the following text:
 
