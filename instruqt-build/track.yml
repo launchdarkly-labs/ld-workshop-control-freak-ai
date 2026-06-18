@@ -22,7 +22,7 @@ developers:
 - sattensil@launchdarkly.com
 show_timer: true
 idle_timeout: 1200
-timelimit: 7200
+timelimit: 4500
 lab_config:
   extend_ttl: 3600
   sidebar_enabled: true
@@ -35,5 +35,5 @@ lab_config:
   hideStopButton: false
   default_layout: AssignmentRight
   default_layout_sidebar_size: 25
-checksum: "8956594465270988490"
+checksum: "7443565370212465842"
 enhanced_loading: false
