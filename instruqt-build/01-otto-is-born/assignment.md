@@ -65,7 +65,7 @@ otto-assistant
 
 The Config exists but has no variations yet — nothing to serve. Add the "born" variation.
 
-1. You now on the Config detail page, adding the first variation.
+1. You are now on the Config detail page, adding the first variation.
 2. For **Name**, enter:
 ```text
 Otto (Born)
@@ -74,7 +74,10 @@ Otto (Born)
 ```text
 otto-born
 ```
-4. Under **Model**, pick **Bedrock** --> **anthropic.claude-haiku-4-5-20251001-v1:0** from the list.
+4. Under **Model**, in the search box, paste and select:
+```text
+**anthropic.claude-haiku-4-5-20251001-v1:0** from the list.
+```
 5. In the prompt text area, select **System**, and add this content in the prompt:
 ```text
 You are a customer service assistant for ToggleWear, an online retailer. Answer questions from customers about products and store policies. Be accurate and concise.
@@ -200,7 +203,10 @@ Otto (Premium)
 ```text
 otto-premium
 ```
-4. Under **Model**, pick **Bedrock** → **anthropic.claude-sonnet-4-6**.
+4. Under **Model**, in the search box, paste and select:
+```text
+**anthropic.claude-sonnet-4-6**
+```
 5. In prompt text area, make sure **System** is selected and enter the following text:
 
 ```text
@@ -218,14 +224,14 @@ Click the **Targeting** tab. Make sure the environment selector reads **test**.
 
 1. Above the **Default rule**, click **+** and select **Build a custom rule**.
 2. Press `]` to hide the right pane.
-2. Build the clause:
+3. Build the clause:
 	1. Context kinds: **user**
 	2. Attribute: **tier**
 	3. Operator: **is one of**
 	4. Values: **premium** _&lt;ENTER&gt;_
     > (a) You may need to manually enter **tier**. (b) After you type in **premium** you must press the Enter key.
-3. For the variation dropdown, select **Otto (Premium)**.
-4. Leave the **Default rule** as **Otto (Born)** — free shoppers and anyone without a tier still get the Haiku Otto.
+4. For the variation dropdown, select **Otto (Premium)**.
+5. Leave the **Default rule** as **Otto (Born)** — free shoppers and anyone without a tier still get the Haiku Otto.
 6. Click **Review and save**, then **Save changes**.
 
 # See it work

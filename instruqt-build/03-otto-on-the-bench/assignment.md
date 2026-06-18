@@ -79,7 +79,7 @@ Otto Born baseline
 # Select Dataset
 
 1. At the bottom of the screen click **Select a dataset to evaluate**, and select **Otto Born baseline**.
-2. To the right of the selector, click **All rows**.
+2. To the right of the selector, click **10**.
 
 # Configure acceptance criteria
 
